@@ -5,8 +5,13 @@ on:
     branches:
       - first-page
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout código
@@ -24,8 +29,14 @@ jobs:
       - name: Compilar Astro
         run: npm run build
 
-      - name: Desplegar a GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Subir archivos de GitHub Pages
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar en GitHub Pages
+        uses: actions/deploy-pages@v1
